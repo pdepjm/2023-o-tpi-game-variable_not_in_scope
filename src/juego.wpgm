@@ -4,8 +4,22 @@ import pepita.*
 program gd {
 	
 	juego.iniciar()
+	
+	//Saltar
 	keyboard.space().onPressDo({logo.saltar()})
+	
+	//Perder
 	game.onCollideDo(logo,{algo=>algo.choque()})
+	
+	//Imagen De Fondo
+	game.boardGround("fondo.jpg")
+	
+	//Cancion De Fondo
+	
+	const cancion = game.sound("cancion.mp3")
+	cancion.shouldLoop(true)
+	game.schedule(0, { cancion.play()} )
+	
 	game.start()
 	
 }
