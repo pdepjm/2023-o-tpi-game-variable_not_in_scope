@@ -1,8 +1,11 @@
 import wollok.game.*
 import pepita.*
 
-program juego {
-	game.title("Juego Base")
-	game.addVisual(pepita)
+program gd {
+	
+	juego.iniciar()
+	keyboard.space().onPressDo({logo.saltar()})
+	game.onCollideDo(logo,{algo=>algo.choque()})
 	game.start()
+	
 }
