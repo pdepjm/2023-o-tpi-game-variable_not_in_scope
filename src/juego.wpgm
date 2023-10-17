@@ -12,11 +12,11 @@ program gd {
 	game.onCollideDo(logo,{algo=>algo.choque()})
 	
 	//Imagen De Fondo
-	game.boardGround("fondo.jpg")
+	game.boardGround("./assets/fondo.jpg")
 	
 	//Cancion De Fondo
 	
-	const cancion = game.sound("cancion.mp3")
+	const cancion = game.sound("./assets/cancion.mp3")
 	cancion.shouldLoop(true)
 	game.schedule(0, { cancion.play()} )
 	

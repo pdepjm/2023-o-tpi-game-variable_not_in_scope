@@ -68,16 +68,16 @@ object juego {
 object logo{
 	
 	var property position = game.at(game.center().x(),piso)
-	var property image = "Cube23.png"
+	var property image = "./assets/Cube23.png"
 	
 	method saltar() {
 		//Use el if para que no se pueda volver a saltar en el aire
 		
 		if(self.position().y() <800 && self.position().y()>=piso){
-			self.salto_preciso()
+			//self.salto_preciso()
 		//self.image("Espina.png")
-		//self.position(position.up(100))
-		//game.schedule(400,{self.position(position.down(100))})
+			self.position(position.up(100))
+			game.schedule(400,{self.position(position.down(100))})
 		}
 	}
 	
@@ -101,7 +101,7 @@ object logo{
 		game.schedule(160,{self.cambio("Transicion/16.png")})
 		game.schedule(170,{self.cambio("Transicion/17.png")})
 		game.schedule(180,{self.cambio("Transicion/18.png")})
-		game.schedule(190,{self.cambio("Cube23.png")})
+		game.schedule(190,{self.cambio("./assets/Cube23.png")})
 		
 		
 		
@@ -124,7 +124,7 @@ object logo{
 		game.schedule(360,{self.cambiob("Transicion/16.png")})
 		game.schedule(370,{self.cambiob("Transicion/17.png")})
 		//game.schedule(380,{self.cambiob("Transicion/18.png")}) Usando este atraviesa el piso
-		game.schedule(390,{self.cambiob("Cube23.png")})
+		game.schedule(390,{self.cambiob("./assets/Cube23.png")})
 		
 		
 		
@@ -147,7 +147,7 @@ object logo{
 class Obstaculo {
 	
 	var property position = game.at(game.width(),piso)
-	method image() = "Espina.png"
+	method image() = "./assets/Espina.png"
 	method aparecer(){
 		game.addVisual(self)
 		self.moverse()
@@ -159,7 +159,7 @@ class Obstaculo {
 		
 	
 	method moverse() {
-		if(position.x()==0){
+		if(position.x()==1000){
 			game.removeTickEvent("espina") 
 			game.removeVisual(self)
 		}else{
@@ -174,7 +174,7 @@ class Obstaculo {
 class ObstaculoDoble{
 	
 	var property position = game.at(game.width(),piso)
-	method image() = "EspinaDoble.png"
+	method image() = "./assets/EspinaDoble.png"
 	method aparecer(){
 		game.addVisual(self)
 		self.moverse()
@@ -200,7 +200,7 @@ class ObstaculoDoble{
 class ObstaculoTriple{
 	
 	var property position = game.at(game.width(),piso)
-	method image() = "EspinaTriple.png"
+	method image() = "./assets/EspinaTriple.png"
 	method aparecer(){
 		game.addVisual(self)
 		self.moverse()
