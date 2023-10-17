@@ -1,24 +1,64 @@
 import wollok.game.*
 
 const piso = 308
+const nivel1 = 308
+const nivel2 = 308
+const velRetroceso = 20
+
 object juego {
 
+	//Generadores De Obstaculos
+	const opciones= [1,2,3]
+	var property eleccion = 0
+	
+	
+/*const opciones2 = [{new Obstaculo().aparecer()},{new ObstaculoDoble().aparecer()},{new ObstaculoTriple().aparecer()}]
+	method generarInvasores() {
+		game.onTick(3000,"aparece obstaculo",{opciones2.anyOne()})
+	}
+ */		
+	
 	method iniciar(){
 		
-		
-	
-		
-	
-  		game.cellSize(1)
+		game.cellSize(1)
 		game.width(1920)
 		game.height(1080)
 		game.addVisualCharacter(logo)
 		self.generarInvasores()
 }
 	method generarInvasores() {
-		game.onTick(3000,"aparece obstaculo",{new Obstaculo().aparecer()})
+		game.onTick(1500,"aparece obstaculo",{self.generador()})
+		
 	}
+	
+	method generador(){
+		
+		
+		//Obstaculo Simple
+		self.eleccion(opciones.anyOne())
+		if(eleccion==1){
+			new Obstaculo().aparecer()
+		
+		}
+		//Obstaculo Doble
+		else if(eleccion==2){
+			new Obstaculo().aparecer()
+			game.schedule(velRetroceso*2,{new Obstaculo().aparecer()})
+		}
+		//Obstaculo Triple
+		else if(eleccion==3){
+		    new Obstaculo().aparecer()
+			game.schedule(velRetroceso*2,{new Obstaculo().aparecer()})
+			game.schedule(velRetroceso*2*2,{new Obstaculo().aparecer()})
+		}
+		
 	}
+
+	
+	
+	}
+	
+	
 	
 
 	
@@ -120,9 +160,65 @@ class Obstaculo {
 	
 	method moverse() {
 		if(position.x()==0){
+			game.removeTickEvent("espina") 
 			game.removeVisual(self)
 		}else{
-			game.onTick(0.5,"espina",{self.position(position.left(30))})
+			game.onTick(velRetroceso,"espina",{self.position(position.left(30))})
 		}
 	}
 }
+
+
+//La imagen solo choca en la esquina inferior izquierda
+/*
+class ObstaculoDoble{
+	
+	var property position = game.at(game.width(),piso)
+	method image() = "EspinaDoble.png"
+	method aparecer(){
+		game.addVisual(self)
+		self.moverse()
+	}
+	method choque (){
+		game.say(logo,"Perdiste")
+		game.schedule(500,{game.stop()})	
+}
+		
+	
+	method moverse() {
+		if(position.x()==0){
+			game.removeTickEvent("espina") 
+			game.removeVisual(self)
+		}else{
+			game.onTick(velRetroceso,"espina",{self.position(position.left(30))})
+		}
+	}
+	
+}
+
+
+class ObstaculoTriple{
+	
+	var property position = game.at(game.width(),piso)
+	method image() = "EspinaTriple.png"
+	method aparecer(){
+		game.addVisual(self)
+		self.moverse()
+	}
+	method choque (){
+		game.say(logo,"Perdiste")
+		game.schedule(500,{game.stop()})	
+}
+		
+	
+	method moverse() {
+		if(position.x()==0){
+			game.removeTickEvent("espina") 
+			game.removeVisual(self)
+		}else{
+			game.onTick(velRetroceso,"espina",{self.position(position.left(30))})
+		}
+	}
+	
+}
+*/
