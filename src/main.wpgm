@@ -1,5 +1,6 @@
 import wollok.game.*
-import pepita.*
+import juego.*
+import logo.*
 
 program gd {
 	
