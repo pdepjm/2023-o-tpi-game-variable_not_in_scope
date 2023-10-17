@@ -1,9 +1,10 @@
 import wollok.game.*
 
-const piso = 308
-const nivel1 = 308
-const nivel2 = 308
-const velRetroceso = 20
+const piso = 6 //308
+const nivel1 = 10
+const nivel2 = 10
+const velRetroceso = 35
+const alturaSalto = 3
 
 object juego {
 
@@ -20,9 +21,9 @@ object juego {
 	
 	method iniciar(){
 		
-		game.cellSize(1)
-		game.width(1920)
-		game.height(1080)
+		//game.cellSize(1)
+		game.width(38.4)// 1920/50 = 38.4
+		game.height(21.6)// 1080/50 = 21.6
 		game.addVisualCharacter(logo)
 		self.generarInvasores()
 }
@@ -76,8 +77,8 @@ object logo{
 		if(self.position().y() <800 && self.position().y()>=piso){
 			//self.salto_preciso()
 		//self.image("Espina.png")
-			self.position(position.up(100))
-			game.schedule(400,{self.position(position.down(100))})
+			self.position(position.up(alturaSalto))
+			game.schedule(320,{self.position(position.down(alturaSalto))})
 		}
 	}
 	
@@ -159,12 +160,13 @@ class Obstaculo {
 		
 	
 	method moverse() {
-		if(position.x()==1000){
-			game.removeTickEvent("espina") 
-			game.removeVisual(self)
-		}else{
-			game.onTick(velRetroceso,"espina",{self.position(position.left(30))})
-		}
+		game.onTick(velRetroceso,"espina",{
+			self.position(position.left(1))
+			if(self.position().x()==0){
+				game.removeTickEvent("espina") 
+				game.removeVisual(self)
+			}
+		})
 	}
 }
 
