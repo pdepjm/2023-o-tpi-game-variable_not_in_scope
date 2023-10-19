@@ -1,4 +1,4 @@
-# Nombre del juego (<- borrar y completar)
+Geometry Dash
 
 ## Equipo de desarrollo
 
