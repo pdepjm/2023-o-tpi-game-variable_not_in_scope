@@ -75,5 +75,15 @@ object logo{
 		self.image(fondo)
 	}
 	
+		method atravesar(){
+			
+			destello.aparecer()
+			if(self.position().y()==piso){
+			self.position(game.at(game.center().x(),nivel2+1))
+		}else if(self.position().y()==nivel2+1){
+			self.position(game.at(game.center().x(),piso))
+		}
+		}
+	
 	
 }
