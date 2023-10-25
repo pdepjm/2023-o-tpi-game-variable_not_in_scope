@@ -2,13 +2,13 @@ import wollok.game.*
 import logo.*
 import Obstaculo.*
 import juego.*
-
+import config.*
 
 
 
 
 object portal{
-		var property position = game.at(game.width(),piso)
+		var property position = game.at(game.width(),config.piso())
 		
 		method image() = "./assets/portal.jpg"
 		
@@ -19,7 +19,7 @@ object portal{
 	}
 		
 		method moverse(nivel) {
-		game.onTick(velRetroceso,"portal",{self.autoControl(nivel)})
+		game.onTick(config.velRetroceso(),"portal",{self.autoControl(nivel)})
 	}
 	
 	method autoControl(nivel){
@@ -41,7 +41,7 @@ object portal{
 
 
 class Plataforma {
-	var property position = game.at(game.width(),nivel2)
+	var property position = game.at(game.width(),config.nivel2())
 	
 	method image() = "./assets/bloque.png"
 	
@@ -51,7 +51,7 @@ class Plataforma {
 	}
 	
 		method moverse() {
-		game.onTick(velRetroceso,"plataforma",{self.autoControl()})
+		game.onTick(config.velRetroceso(),"plataforma",{self.autoControl()})
 	}
 	
 	method autoControl(){

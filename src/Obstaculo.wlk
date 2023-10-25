@@ -1,12 +1,13 @@
 import wollok.game.*
 import juego.*
 import logo.*
+import config.*
 
 class Obstaculo {
 	
 	
 	
-	var property position = game.at(game.width(),piso)
+	var property position = game.at(game.width(),config.piso())
 	
 	method image() = "./assets/Espina.png"
 	
@@ -23,7 +24,7 @@ class Obstaculo {
 		
 	
 	method moverse(altura) {
-		game.onTick(velRetroceso,"espina",{self.autoControl(altura)})
+		game.onTick(config.velRetroceso(),"espina",{self.autoControl(altura)})
 	}
 	
 	method autoControl(altura){

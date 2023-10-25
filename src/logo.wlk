@@ -1,20 +1,21 @@
 import wollok.game.*
 import juego.*
 import Obstaculo.*
+import config.*
 
 object logo{
 	
-	var property position = game.at(game.center().x(),piso)
+	var property position = game.at(game.center().x(),config.piso())
 	var property image = "./assets/Cube23.png"
 	
 	method saltar() {
 		//Use el if para que no se pueda volver a saltar en el aire
 		
-		if(self.position().y() <800 && self.position().y()>=piso){
+		if(self.position().y() <800 && self.position().y()>=config.piso()){
 			//self.salto_preciso()
 		//self.image("Espina.png")
-			self.position(position.up(alturaSalto))
-			game.schedule(320,{self.position(position.down(alturaSalto))})
+			self.position(position.up(config.alturaSalto()))
+			game.schedule(320,{self.position(position.down(config.alturaSalto()))})
 		}
 	}
 	
@@ -78,10 +79,10 @@ object logo{
 		method atravesar(){
 			
 			destello.aparecer()
-			if(self.position().y()==piso){
-			self.position(game.at(game.center().x(),nivel2+1))
-		}else if(self.position().y()==nivel2+1){
-			self.position(game.at(game.center().x(),piso))
+			if(self.position().y()==config.piso()){
+			self.position(game.at(game.center().x(),config.nivel2()+1))
+		}else if(self.position().y()==config.nivel2()+1){
+			self.position(game.at(game.center().x(),config.piso()))
 		}
 		}
 	

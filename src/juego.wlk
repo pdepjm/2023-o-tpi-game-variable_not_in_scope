@@ -2,18 +2,9 @@ import wollok.game.*
 import logo.*
 import Obstaculo.*
 import niveles.*
+import config.*
 
 
-const piso = 6 //308
-const nivel1 = 10
-const nivel2 = 13
-const velRetroceso = 45
-const alturaSalto = 3
-const tiempoArriba = 30000
-const frecuenciaPinchos = 1500
-const tiempoPiso = 30000
-
-const tiempoPorModo=30000
 
 object juego {
 
@@ -48,7 +39,7 @@ object juego {
 	//ELegir Modo De Juego
 	method modoDeJuego(){
 		
-		game.onTick(tiempoPorModo,"modo de juego",{self.seleccionar()})
+		game.onTick(config.tiempoPorModo(),"modo de juego",{self.seleccionar()})
 	}
 	
 	method seleccionar(){
@@ -65,7 +56,7 @@ object juego {
 	
 	//Generadores 
 	method generarInvasores(altura) {
-		game.onTick(frecuenciaPinchos,"aparece obstaculo",{self.generador(altura)})
+		game.onTick(config.frecuenciaPinchos(),"aparece obstaculo",{self.generador(altura)})
 		
 	}
 	
@@ -74,23 +65,23 @@ object juego {
 	method generador(altura){
 		
 		cantidadPinchos = new Range(start = 1, end = 3).anyOne()
-		cantidadPinchos.times({n=>game.schedule(velRetroceso*n,{new Obstaculo().aparecer(altura)})})
+		cantidadPinchos.times({n=>game.schedule(config.velRetroceso()*n,{new Obstaculo().aparecer(altura)})})
 	}
 
 //Modos De Juego
 	
 	method tiempoEnElPiso(){
-		game.schedule(0,{self.generarInvasores(piso)})
-		game.schedule(tiempoPiso-frecuenciaPinchos,{game.removeTickEvent("aparece obstaculo") })
+		game.schedule(0,{self.generarInvasores(config.piso())})
+		game.schedule(config.tiempoPiso()-config.frecuenciaPinchos(),{game.removeTickEvent("aparece obstaculo") })
 	}
 	
 		method cambioNivel(){
-		portal.aparecer(piso)
-		game.onTick(velRetroceso,"crear piso",{new Plataforma().aparecer()})
-		game.schedule(frecuenciaPinchos,{self.generarInvasores(nivel2+1)})
-		game.schedule(tiempoArriba-frecuenciaPinchos,{game.removeTickEvent("aparece obstaculo") })
-		game.schedule(tiempoArriba,{game.removeTickEvent("crear piso") })
-		game.schedule(tiempoArriba,{portal.aparecer(nivel2+1)})
+		portal.aparecer(config.piso())
+		game.onTick(config.velRetroceso(),"crear piso",{new Plataforma().aparecer()})
+		game.schedule(config.frecuenciaPinchos(),{self.generarInvasores(config.nivel2()+1)})
+		game.schedule(config.tiempoArriba()-config.frecuenciaPinchos(),{game.removeTickEvent("aparece obstaculo") })
+		game.schedule(config.tiempoArriba(),{game.removeTickEvent("crear piso") })
+		game.schedule(config.tiempoArriba(),{portal.aparecer(config.nivel2()+1)})
 	}
 		
 	}
@@ -142,12 +133,12 @@ object eliminador{
  	var property image = "./assets/brillos/brillo1.png"
  	method aparecer(){
  		game.addVisual(self)
- 		game.schedule(20,{image("./assets/brillos/brillo2.png")})
- 		game.schedule(40,{image("./assets/brillos/brillo3.png")})
- 		game.schedule(80,{image("./assets/brillos/brillo4.png")})
- 		game.schedule(100,{image("./assets/brillos/brillo4.png")})
- 		game.schedule(120,{image("./assets/brillos/brillo3.png")})	
- 		game.schedule(140,{image("./assets/brillos/brillo2.png")})
+ 		game.schedule(20,{self.image("./assets/brillos/brillo2.png")})
+ 		game.schedule(40,{self.image("./assets/brillos/brillo3.png")})
+ 		game.schedule(80,{self.image("./assets/brillos/brillo4.png")})
+ 		game.schedule(100,{self.image("./assets/brillos/brillo4.png")})
+ 		game.schedule(120,{self.image("./assets/brillos/brillo3.png")})	
+ 		game.schedule(140,{self.image("./assets/brillos/brillo2.png")})
  		game.schedule(160,{game.removeVisual(self)})
  		
  	}
