@@ -14,7 +14,12 @@ program gd {
 	game.onCollideDo(logo,{algo=>algo.choque()})
 	
 	//Atravesar Portal
-	game.onCollideDo(portal,{algo=>algo.atravesar()})
+	game.onCollideDo(portal,{
+		algo=>
+			var new_height = portal.nextHeight()
+			algo.atravesar(new_height)
+	})
+	
 	
 	//Eliminador
 	//game.onCollideDo(eliminador,{algo=>algo.autoelminarse()})

@@ -9,7 +9,7 @@ class Obstaculo {
 	
 	var property position = game.at(game.width(),config.piso())
 	
-	method image() = "./assets/Espina.png"
+	method image()
 	
 	method aparecer(altura){
 		game.addVisual(self)
@@ -18,7 +18,7 @@ class Obstaculo {
 	
 	method choque (){
 		game.say(logo,"Perdiste")
-		game.schedule(500,{game.stop()})
+		game.schedule(config.loseDelay(),{game.stop()})
 		game.addVisual(perder)	
 	}
 		
@@ -31,7 +31,7 @@ class Obstaculo {
 			
 				self.position(game.at(self.position().x()-1,altura))
 				
-				if(self.position().x()==0){
+				if(self.position().x()==2){
 				game.removeTickEvent("espina") 
 				game.removeVisual(self)
 				
@@ -43,12 +43,21 @@ class Obstaculo {
 	
 				game.removeVisual(self)
 	}
-	method atravesar(){
+	method atravesar(some_number){
 	
 				return 0
 	}
 	
 }
+
+class Pincho inherits Obstaculo{
+	override method image() = "./assets/Espina.png"
+}
+
+class Bloque inherits Obstaculo{
+	override method image() = "./assets/bloque.png"
+}
+
 
 //La imagen solo choca en la esquina inferior izquierda
 /*

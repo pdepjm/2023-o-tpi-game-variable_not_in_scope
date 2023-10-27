@@ -4,58 +4,67 @@ import Obstaculo.*
 import niveles.*
 import config.*
 
-
+class ContextException inherits wollok.lang.Exception {}
 
 object juego {
 
-	var property modoJuego = 1 
-	//Generadores De Obstaculos
 	var property cantidadPinchos = 0
-	//var property eleccion = 0 Generador Antiguo
-	
-	
-/*const opciones2 = [{new Obstaculo().aparecer()},{new ObstaculoDoble().aparecer()},{new ObstaculoTriple().aparecer()}]
-	method generarInvasores() {
-		game.onTick(3000,"aparece obstaculo",{opciones2.anyOne()})
-	}
- */		
+
+	var modoJuego=2 //usar solo para niveles secuenciales
+
+	//se utiliza para guardar la altura de un bloque generado en el modo de juego 3
+	var altura_anterior=game.height()/2
+
 	
 	method iniciar(){
 		//game.cellSize(1)
 		game.width(38.4)// 1920/50 = 38.4
 		game.height(21.6)// 1080/50 = 21.6
 		game.addVisualCharacter(logo)
+		game.addVisualCharacter(portal)
+		game.addVisualCharacter(portalRotado)
+		portal.offBoard()
+		portalRotado.offBoard()
 		//game.addVisual(eliminador)
 		
 		
 		//Si pongo tiempo en el piso primero no funciona, tengo que poner si o si cambio de nivel, tampoco funcionan los modos de juego auomaticos
-		self.cambioNivel()
+		/* 
+		self.tiempoEnPlataforma()
 		game.schedule(35000,{self.tiempoEnElPiso()})
-		game.schedule (70000,{self.cambioNivel()})
-		
+		game.schedule (70000,{self.tiempoEnPlataforma()})
+		 */
+		self.tiempoEnElPiso()
 		
 	}
-	
+
 	//ELegir Modo De Juego
-	method modoDeJuego(){
-		
-		game.onTick(config.tiempoPorModo(),"modo de juego",{self.seleccionar()})
-	}
-	
+
 	method seleccionar(){
-		
-		modoJuego = new Range(start = 1, end = 2).anyOne()
-		
+		/*randomized
+		modoJuego = new Range(start = 1, end = 3).anyOne()
+		 */
 		if(modoJuego==1){
 			self.tiempoEnElPiso()
+			modoJuego++
+			return config.piso()
 		}else if(modoJuego==2){
-			self.cambioNivel()
+			modoJuego++
+			self.tiempoEnPlataforma()
+			return config.nivel2()
+		}else if(modoJuego==3){
+			modoJuego=1
+			self.tiempoEnNave()
+			return config.nivel3()
+		}
+		else{
+			throw new ContextException(message = "Invalid gamemode")
 		}
 		
 	}
 	
 	//Generadores 
-	method generarInvasores(altura) {
+	method generarPinchos(altura) {
 		game.onTick(config.frecuenciaPinchos(),"aparece obstaculo",{self.generador(altura)})
 		
 	}
@@ -63,28 +72,89 @@ object juego {
 	
 	
 	method generador(altura){
-		
 		cantidadPinchos = new Range(start = 1, end = 3).anyOne()
-		cantidadPinchos.times({n=>game.schedule(config.velRetroceso()*n,{new Obstaculo().aparecer(altura)})})
+		cantidadPinchos.times({ n=>game.schedule(config.velRetroceso()*n,{ new Pincho().aparecer(altura) }) })
+	}
+	
+	method generarBloques(){
+		game.onTick(config.frecuenciaBloques(), "aparece obstaculo", {self.generadorBloques()})
+	}
+	
+	// Sirve para garantizar dispersion entre los bloques obstaculo
+	method randomEntre(piso, techo, rand_anterior){
+		var rand = piso.randomUpTo(techo).truncate(0)
+		if((rand-rand_anterior).abs()<config.blockDistance()){
+			rand = self.randomEntre(piso, techo, rand_anterior)
+		}
+		return rand
+	}
+	
+	method generadorBloques(){
+		//const altura = 1.randomUpTo(game.height()-1).truncate(0)
+		const altura = self.randomEntre(1, game.height()-1, altura_anterior)
+		new Bloque().aparecer(altura)
+		altura_anterior=altura
 	}
 
 //Modos De Juego
 	
 	method tiempoEnElPiso(){
-		game.schedule(0,{self.generarInvasores(config.piso())})
+		
+		game.schedule(0,{self.generarPinchos(config.piso())})
 		game.schedule(config.tiempoPiso()-config.frecuenciaPinchos(),{game.removeTickEvent("aparece obstaculo") })
-	}
-	
-		method cambioNivel(){
-		portal.aparecer(config.piso())
-		game.onTick(config.velRetroceso(),"crear piso",{new Plataforma().aparecer()})
-		game.schedule(config.frecuenciaPinchos(),{self.generarInvasores(config.nivel2()+1)})
-		game.schedule(config.tiempoArriba()-config.frecuenciaPinchos(),{game.removeTickEvent("aparece obstaculo") })
-		game.schedule(config.tiempoArriba(),{game.removeTickEvent("crear piso") })
-		game.schedule(config.tiempoArriba(),{portal.aparecer(config.nivel2()+1)})
-	}
+		
+		var next_gamemode_height
+		
+		game.schedule(config.tiempoPiso(), {
+			next_gamemode_height = self.seleccionar()
+			portal.nextHeight(next_gamemode_height)
+		})
+		
+		game.schedule(config.tiempoPiso(),{portal.aparecer(config.piso())})
 		
 	}
+	
+	method tiempoEnPlataforma(){
+		
+		game.onTick(config.velRetroceso(),"crear piso",{
+			const cuadrado = new Plataforma(position=game.at(game.width(),config.nivel2()-1))
+			cuadrado.aparecer()
+		})
+
+		game.schedule(config.frecuenciaPinchos(),{self.generarPinchos(config.nivel2())})
+		game.schedule(config.tiempoArriba()-config.frecuenciaPinchos(),{game.removeTickEvent("aparece obstaculo") })
+		game.schedule(config.tiempoArriba(),{game.removeTickEvent("crear piso") })
+	
+	
+		var next_gamemode_height
+	
+		game.schedule(config.tiempoArriba(), {
+			next_gamemode_height = self.seleccionar()
+			portal.nextHeight(next_gamemode_height)
+		})
+		
+		game.schedule(config.tiempoArriba(),{portal.aparecer(config.nivel2())})
+	
+	}
+	
+	method tiempoEnNave(){
+		
+		game.schedule(config.frecuenciaBloques(),{self.generarBloques()})
+		game.schedule(config.tiempoNave()-config.frecuenciaBloques(),{game.removeTickEvent("aparece obstaculo") })
+		
+		var next_gamemode_height
+		
+		game.schedule(config.tiempoNave(), {
+			next_gamemode_height = self.seleccionar()
+			portalRotado.nextHeight(next_gamemode_height)
+		})
+		
+		game.schedule(config.tiempoNave(),{portalRotado.aparecer(3)})
+	
+	}
+		
+}
+
 object perder{
 	var property position = game.origin()
 	var property image = "./assets/roto.png"
@@ -127,19 +197,4 @@ object eliminador{
  
  
  
- object destello{
- 	var property position = game.origin()
- 	
- 	var property image = "./assets/brillos/brillo1.png"
- 	method aparecer(){
- 		game.addVisual(self)
- 		game.schedule(20,{self.image("./assets/brillos/brillo2.png")})
- 		game.schedule(40,{self.image("./assets/brillos/brillo3.png")})
- 		game.schedule(80,{self.image("./assets/brillos/brillo4.png")})
- 		game.schedule(100,{self.image("./assets/brillos/brillo4.png")})
- 		game.schedule(120,{self.image("./assets/brillos/brillo3.png")})	
- 		game.schedule(140,{self.image("./assets/brillos/brillo2.png")})
- 		game.schedule(160,{game.removeVisual(self)})
- 		
- 	}
- }
+
