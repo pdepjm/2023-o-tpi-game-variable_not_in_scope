@@ -23,18 +23,19 @@ object juego {
 		game.addVisualCharacter(logo)
 		game.addVisualCharacter(portal)
 		game.addVisualCharacter(portalRotado)
+		game.addVisualCharacter(pressEnter)
 		portal.offBoard()
 		portalRotado.offBoard()
-		//game.addVisual(eliminador)
 		
 		
-		//Si pongo tiempo en el piso primero no funciona, tengo que poner si o si cambio de nivel, tampoco funcionan los modos de juego auomaticos
-		/* 
-		self.tiempoEnPlataforma()
-		game.schedule(35000,{self.tiempoEnElPiso()})
-		game.schedule (70000,{self.tiempoEnPlataforma()})
-		 */
-		self.tiempoEnElPiso()
+		//esperando a que se presione enter
+		keyboard.enter().onPressDo({
+			game.removeVisual(pressEnter)
+			const cancion = game.sound("./assets/cancion.mp3")
+			cancion.shouldLoop(true)
+			cancion.play()
+			self.tiempoEnElPiso()
+		})
 		
 	}
 
@@ -65,13 +66,13 @@ object juego {
 	
 	//Generadores 
 	method generarPinchos(altura) {
-		game.onTick(config.frecuenciaPinchos(),"aparece obstaculo",{self.generador(altura)})
+		game.onTick(config.frecuenciaPinchos(),"aparece obstaculo",{self.generadorPinchos(altura)})
 		
 	}
 	
 	
 	
-	method generador(altura){
+	method generadorPinchos(altura){
 		cantidadPinchos = new Range(start = 1, end = 3).anyOne()
 		cantidadPinchos.times({ n=>game.schedule(config.velRetroceso()*n,{ new Pincho().aparecer(altura) }) })
 	}
@@ -91,7 +92,7 @@ object juego {
 	
 	method generadorBloques(){
 		//const altura = 1.randomUpTo(game.height()-1).truncate(0)
-		const altura = self.randomEntre(1, game.height()-1, altura_anterior)
+		const altura = self.randomEntre(config.piso(), game.height()-1, altura_anterior)
 		new Bloque().aparecer(altura)
 		altura_anterior=altura
 	}
@@ -103,7 +104,7 @@ object juego {
 		game.schedule(0,{self.generarPinchos(config.piso())})
 		game.schedule(config.tiempoPiso()-config.frecuenciaPinchos(),{game.removeTickEvent("aparece obstaculo") })
 		
-		var next_gamemode_height
+		var next_gamemode_height //altura a la que deba aparecer el portal
 		
 		game.schedule(config.tiempoPiso(), {
 			next_gamemode_height = self.seleccionar()
@@ -149,10 +150,15 @@ object juego {
 			portalRotado.nextHeight(next_gamemode_height)
 		})
 		
-		game.schedule(config.tiempoNave(),{portalRotado.aparecer(3)})
+		game.schedule(config.tiempoNave(),{portalRotado.aparecer(config.piso())})
 	
 	}
 		
+}
+
+object pressEnter{
+	var property position = game.at(game.center().x()-3, game.center().y())
+	var property image = "./assets/press_enter.png"
 }
 
 object perder{

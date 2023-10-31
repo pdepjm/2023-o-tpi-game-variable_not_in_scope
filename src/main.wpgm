@@ -27,11 +27,6 @@ program gd {
 	//Imagen De Fondo
 	game.boardGround("./assets/fondo.jpg")
 	
-	//Cancion De Fondo
-	
-	const cancion = game.sound("./assets/cancion.mp3")
-	cancion.shouldLoop(true)
-	game.schedule(0, { cancion.play()} )
 	
 	game.start()
 	

@@ -77,7 +77,7 @@ object ship {
 	method autoControl(){
 		self.position(game.at(self.position().x(),self.position().y()+movement_direction))
 		const y_position = self.position().y()
-		if(y_position==game.height() || y_position==0){
+		if(y_position==game.height() || y_position==config.piso()){
 			self.choque()
 		}
 	}

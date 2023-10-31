@@ -9,10 +9,10 @@ object config {
 	method nivel3() = 14
 	method velRetroceso() = 45
 	method alturaSalto() = 3
-	method tiempoArriba() = 15000
+	method tiempoArriba() = 10000
 	method frecuenciaPinchos() = 1500
 	method frecuenciaBloques() = 800
-	method blockDistance() = 8
+	method blockDistance() = 7
 	method tiempoPiso() = 15000
 	method tiempoNave() = 15000
 	method tiempoPorModo()=30000
