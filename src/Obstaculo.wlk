@@ -18,6 +18,7 @@ class Obstaculo {
 	
 	method choque (){
 		game.say(logo,"Perdiste")
+		
 		game.schedule(config.loseDelay(),{game.stop()})
 		game.addVisual(perder)	
 	}
@@ -57,6 +58,15 @@ class Pincho inherits Obstaculo{
 class Bloque inherits Obstaculo{
 	override method image() = "./assets/bloque.png"
 }
+
+class Columna inherits Obstaculo{
+	override method image() = "./assets/columna.png"
+	
+	
+
+
+}
+
 
 
 //La imagen solo choca en la esquina inferior izquierda
