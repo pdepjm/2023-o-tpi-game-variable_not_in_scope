@@ -12,10 +12,14 @@ object config {
 	method tiempoArriba() = 10000
 	method frecuenciaPinchos() = 1500
 	method frecuenciaBloques() = 800
+	method frecuenciaColumna() = 500
 	method blockDistance() = 7
 	method tiempoPiso() = 15000
 	method tiempoNave() = 15000
+	method tiempoArania() = 15000
 	method tiempoPorModo()=30000
 	method loseDelay() = 3000
+	method columnaAlta()=15
+	method techo()=14
 	
 }
