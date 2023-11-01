@@ -9,7 +9,7 @@ class ContextException inherits wollok.lang.Exception {}
 object juego {
 
 	var property cantidadPinchos = 0
-
+	var property alturaAleatoria = 0
 	var modoJuego=2 //usar solo para niveles secuenciales
 
 	//se utiliza para guardar la altura de un bloque generado en el modo de juego 3
@@ -23,6 +23,7 @@ object juego {
 		game.addVisualCharacter(logo)
 		game.addVisualCharacter(portal)
 		game.addVisualCharacter(portalRotado)
+		game.addVisualCharacter(inicio)
 		game.addVisualCharacter(pressEnter)
 		portal.offBoard()
 		portalRotado.offBoard()
@@ -30,11 +31,15 @@ object juego {
 		
 		//esperando a que se presione enter
 		keyboard.enter().onPressDo({
+			
 			game.removeVisual(pressEnter)
+			game.removeVisual(inicio)
 			const cancion = game.sound("./assets/cancion.mp3")
 			cancion.shouldLoop(true)
 			cancion.play()
-			self.tiempoEnElPiso()
+			 self.timepoEnArania()
+			 game.schedule(config.tiempoArania()+10,{self.tiempoEnElPiso()})
+			 
 		})
 		
 	}
@@ -45,6 +50,8 @@ object juego {
 		/*randomized
 		modoJuego = new Range(start = 1, end = 3).anyOne()
 		 */
+		 
+		
 		if(modoJuego==1){
 			self.tiempoEnElPiso()
 			modoJuego++
@@ -96,6 +103,24 @@ object juego {
 		new Bloque().aparecer(altura)
 		altura_anterior=altura
 	}
+	
+			method generarColumna(){
+		game.onTick(config.frecuenciaColumna(), "columna", {self.generadorColumna()})
+	}
+
+		method generadorColumna(){
+		
+		const numeros = [2, 1]
+		self.alturaAleatoria(numeros.anyOne())
+		
+		if(self.alturaAleatoria()==1){
+			new Columna().aparecer(config.piso())
+		}else if (self.alturaAleatoria()==2){
+			new Columna().aparecer(config.columnaAlta())
+			new Bloque().aparecer(config.piso()+config.techo())
+		}
+}
+	
 
 //Modos De Juego
 	
@@ -114,6 +139,9 @@ object juego {
 		game.schedule(config.tiempoPiso(),{portal.aparecer(config.piso())})
 		
 	}
+	
+	
+	
 	
 	method tiempoEnPlataforma(){
 		
@@ -138,6 +166,25 @@ object juego {
 	
 	}
 	
+	
+	method timepoEnArania(){
+		logo.entity(arania)
+		arania.moverse()
+		game.schedule(0,{self.generarColumna()})
+		game.schedule(config.tiempoArania()-config.frecuenciaColumna(),{game.removeTickEvent("columna") })
+		game.schedule(config.tiempoArania(),{self.estructuraFinal() })
+		
+}
+	method estructuraFinal(){
+		portal.aparecer(config.piso())
+		new Columna().aparecer(config.columnaAlta())
+		new Bloque().aparecer(config.piso()+config.techo())
+	}
+	
+	
+	
+	
+	
 	method tiempoEnNave(){
 		
 		game.schedule(config.frecuenciaBloques(),{self.generarBloques()})
@@ -153,18 +200,46 @@ object juego {
 		game.schedule(config.tiempoNave(),{portalRotado.aparecer(config.piso())})
 	
 	}
+	
+	
 		
 }
+
+
 
 object pressEnter{
 	var property position = game.at(game.center().x()-3, game.center().y())
 	var property image = "./assets/press_enter.png"
 }
 
+object inicio{
+	var property position = game.origin()
+	var property image = "./assets/inicio.jpg"
+}
+
 object perder{
+	
+	
 	var property position = game.origin()
 	var property image = "./assets/roto.png"
+	
 }
+
+object destello{
+		var property image = "./assets/brillos/brillo1.png"
+		var property position = game.origin()
+		method brillar(){
+		game.addVisual(self)
+		game.schedule(0.2,{self.image("./assets/brillos/brillo1.png")})
+		game.schedule(0.5,{self.image("./assets/brillos/brillo2.png")})
+		game.schedule(0.8,{self.image("./assets/brillos/brillo3.png")})
+		game.schedule(1,{self.image("./assets/brillos/brillo4.png")})
+		game.schedule(1.4,{self.image("./assets/brillos/brillo3.png")})
+		game.schedule(1.9,{self.image("./assets/brillos/brillo2.png")})
+		game.schedule(2.4,{self.image("./assets/brillos/brillo1.png")})
+		game.removeVisual(self)
+	}	
+	}
 
 
 //Generador Antiguo
