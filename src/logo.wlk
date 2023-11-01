@@ -4,9 +4,10 @@ import Obstaculo.*
 import config.*
 
 
+
 object logo{
 	
-	var entity = cube
+	var property entity = cube
 	
 	method position() = entity.position()
 	
@@ -28,10 +29,17 @@ object logo{
 			entity.position(game.at(config.x(),new_height))
 			entity = cube
 		}
+		else if(self.entity()==arania){
+			self.entity(cube)
+		}
 		else if (new_height!=config.nivel3() && entity.isShip()){
 			entity.position(game.at(config.x(),new_height))
 			game.removeTickEvent("movimiento")	
 			entity = cube
+		}
+		else if(!(entity.isShip())){
+			
+			entity = arania
 		}
 
 	}
@@ -42,7 +50,8 @@ object logo{
 object cube {
 	
 	var property position = game.at(config.x(),config.piso())
-	
+
+
 	var property image = "./assets/Cube23.png"
 	
 	method saltar() {
@@ -55,6 +64,70 @@ object cube {
 			game.schedule(320,{self.position(position.down(config.alturaSalto()))})
 		}
 	}
+	
+	method isShip()=false
+	
+}
+
+object arania {
+	
+	var property position = game.at(config.x(),config.piso())
+	
+	var property image = "./assets/arania/arania1-1.png"
+	
+	var property paso = 0
+	
+	var property pisoActual = 0
+	
+	method saltar() {
+		//self.position().y(config.columnaAlta()+300)
+		game.removeTickEvent("movimiento arania")	
+		
+		if(self.pisoActual()==0){
+			self.position(position.up(config.techo()))
+			game.onTick(config.velRetroceso(),"movimiento arania",{self.trepar()})
+			self.pisoActual(1)
+		
+		}else{
+			self.position(position.down(config.techo()))
+			game.onTick(config.velRetroceso(),"movimiento arania",{self.caminar()})
+			self.pisoActual(0)
+			
+		}
+		
+		
+		
+	
+		
+	
+	}
+	
+
+	method moverse(){
+		self.pisoActual(0)
+		game.onTick(config.velRetroceso(),"movimiento arania",{self.caminar()})
+	}
+	
+	method caminar(){
+		if(self.paso()==0){
+			self.image("./assets/arania/arania1-1.png")
+			self.paso(1)	
+			
+		}else{
+			self.image("./assets/arania/arania2-1.png")
+			self.paso(0)
+		}
+		}
+	method trepar(){
+		
+			if(self.paso()==0){
+			self.image("./assets/arania/arania1-2.png")
+			self.paso(1)	
+			
+		}else{
+			self.image("./assets/arania/arania2-2.png")
+			self.paso(0)	
+	}}
 	
 	method isShip()=false
 	
