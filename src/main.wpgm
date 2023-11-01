@@ -6,7 +6,7 @@ import niveles.*
 program gd {
 	
 	juego.iniciar()     
-	
+	      
 	//Saltar
 	keyboard.space().onPressDo({logo.saltar()})
 	
