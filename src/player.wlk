@@ -22,7 +22,7 @@ object player{
 //Cod 1
 object cube {
 	
-	var property position
+	var property position = game.at(config.x(),config.alturaPiso())
 
 
 	var property image = "./assets/Cube23.png"
@@ -43,7 +43,7 @@ object cube {
 //Cod 2
 object arania {
 	
-	var property position
+	var property position = game.at(config.x(), config.alturaPiso())
 	
 	var property image = "./assets/arania/arania1-1.png"
 	
@@ -102,7 +102,7 @@ object arania {
 //Cod 3
 object ship {
 	
-	var property position
+	var property position = game.at(config.x(), config.alturaNave())
 	
 	const image_vector = ["./assets/triangle_ship_down.png", "./assets/triangle_ship_up.png"]
 
@@ -111,10 +111,10 @@ object ship {
 	var movement_direction = -1
 	
 	method moverse(){
-		game.onTick(config.velRetroceso(),"movimiento",{
+		game.onTick(config.velRetroceso(),"movimiento nave",{
 			self.position(game.at(self.position().x(),self.position().y()+movement_direction))
 			const y_position = self.position().y()
-			if(y_position==game.height() || y_position==config.alturaPiso()){
+			if(y_position==game.height() || y_position==config.alturaPiso()-1){
 				self.choque()
 			}
 		})

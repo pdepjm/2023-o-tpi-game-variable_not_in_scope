@@ -5,7 +5,7 @@ object config {
 	method x()=game.center().x()-3
 	method alturaPiso() = 6 //308
 	method alturaPlataforma() = 13
-	method alturaNave() = 14
+	method alturaNave() = 17
 	
 	method velRetroceso() = 45
 	method alturaSalto() = 3
@@ -14,11 +14,11 @@ object config {
 	method frecuenciaBloques() = 800
 	method frecuenciaColumna() = 500
 	
-	method blockDistance() = 7
+	method blockDistance() = 8
 	
 	method tiempoPiso() = 15000
 	method tiempoPlataforma() = 10000  
-	method tiempoNave() = 15000
+	method tiempoNave() = 15000 
 	method tiempoArania() = 15000
 	method loseDelay() = 3000
 	method columnaAlta()=15

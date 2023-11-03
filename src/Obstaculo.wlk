@@ -2,24 +2,28 @@ import wollok.game.*
 import juego.*
 import player.*
 import config.*
+import niveles.onTickIdHandler
 
+const portalesInvisiblesOnTick = []
+
+const portalesInvisiblesByOnTick = new Dictionary()
 
 class Desplazable {
 	
 	var property position = game.at(game.width(),config.alturaPiso())
 	
-	var property image = "" //pasar por parametro
+	var property image //pasar por parametro
 	
-	method aparecer(altura)
+	method aparecer(altura, ontickID)
 	
 	method choque ()
 		
 	
-	method moverse(altura) {
-		game.onTick(config.velRetroceso(),"desplazamiento",{
+	method moverse(altura, ontickID) {
+		game.onTick(config.velRetroceso(),ontickID,{
 			self.position(game.at(self.position().x()-1,altura))
 			if(self.position().x()==2){
-				game.removeTickEvent("desplazamiento") 
+				game.removeTickEvent(ontickID) 
 				game.removeVisual(self)
 			}
 		})
@@ -48,9 +52,9 @@ class Obstaculo inherits Desplazable{
 		game.addVisual(perder)	
 	}
 	
-	override method aparecer(altura){
+	override method aparecer(altura, ontickID){
 		game.addVisual(self)
-		self.moverse(altura)
+		self.moverse(altura, ontickID)
 	}
 }
 
@@ -58,9 +62,9 @@ class Plataforma inherits Desplazable {
 	
 	override method choque ()= 0
 	
-	override method aparecer(altura){
+	override method aparecer(altura, ontickID){
 		game.addVisual(self)
-		self.moverse(altura)
+		self.moverse(altura, ontickID)
 	}
 
 }
@@ -68,16 +72,16 @@ class Plataforma inherits Desplazable {
 class Portal inherits Desplazable{
 		
 	//ya se genero como visual previamente, ahora solo se coloca en la pantalla
-	override method aparecer(altura){
+	override method aparecer(altura, ontickID){
 		self.position(game.at(game.width(),altura))
-		self.moverse(altura)
+		self.moverse(altura, ontickID)
 	}
 	
-	override method moverse(altura){
-		game.onTick(config.velRetroceso(),"desplazar portal",{
+	override method moverse(altura, ontickID){
+		game.onTick(config.velRetroceso(),ontickID,{
 			self.position(game.at(self.position().x()-1,altura))
 			if(self.position().x()==2){
-				game.removeTickEvent("desplazar portal") 
+				game.removeTickEvent(ontickID) 
 				self.offBoard()
 			}
 		})
@@ -89,8 +93,6 @@ class Portal inherits Desplazable{
 		const siguienteModoJuego = juego.currentGameMode().siguienteNivel()
 		juego.currentGameMode(siguienteModoJuego)
 		
-		player.entity(siguienteModoJuego.entity())
-		player.entity().position(game.at(config.x(),siguienteModoJuego.altura()))
 		siguienteModoJuego.iniciar()
 		
 	}
@@ -101,26 +103,61 @@ const portal = new Portal(image = config.imgPortal())
 
 class PortalRotado inherits Portal{
 	
-	override method aparecer(nivel){
+	override method aparecer(nivel, ontickID){
 		self.position(game.at(game.width(),nivel))
-		12.times({i=>
-			const nuevo_portal = new PortalInvisible(position = game.at(game.width(),nivel+i+4))
+		10.times({i=>
+			const onTickID = onTickIdHandler.newID()
+				portalesInvisiblesOnTick.add(onTickID) //luego realizar foreach eliminar el ontick
+			const nuevo_portal = new PortalInvisible()
+				portalesInvisiblesByOnTick.put(onTickID, nuevo_portal)
 			game.addVisualCharacter(nuevo_portal)
-			nuevo_portal.aparecer(nivel+i)
+			nuevo_portal.aparecer(nivel+2*i+1, onTickID)
 		})
-		self.moverse(nivel)
+		self.moverse(nivel, ontickID)
 	}
+	
+	override method choque(){}
 
 }
 
 const portalRotado = new PortalRotado(image = config.imgPortalRotado())
 
-class PortalInvisible inherits Portal{
-	override method moverse(altura){
-		game.onTick(config.velRetroceso(),"mover portal invisible",{
+class PortalInvisible{
+	
+	//var property image = config.imgPortalRotado()
+	
+	var property position = game.at(game.width(),config.alturaPiso())
+	
+		//ya se genero como visual previamente, ahora solo se coloca en la pantalla
+	method aparecer(altura, ontickID){
+		self.position(game.at(game.width(),altura))
+		self.moverse(altura, ontickID)
+	}
+	
+	method choque(){
+		
+		game.removeTickEvent("movimiento nave")
+		
+		portalesInvisiblesOnTick.forEach({ontickID=>
+			game.removeTickEvent(ontickID) 
+				const portal_invisible = portalesInvisiblesByOnTick.get(ontickID)
+			game.removeVisual(portal_invisible)
+		})
+		portalesInvisiblesOnTick.clear()
+		portalesInvisiblesByOnTick.clear()
+		
+		//se le debe preguntar a juego cual es el modo que se esta jugando ahora
+		const siguienteModoJuego = juego.currentGameMode().siguienteNivel()
+
+		siguienteModoJuego.iniciar()
+		
+	}
+	
+	method moverse(altura, ontickID){
+		game.onTick(config.velRetroceso(),ontickID,{
 			self.position(game.at(self.position().x()-1,altura))
 			if(self.position().x()==2){
-				game.removeTickEvent("mover portal invisible") 
+				game.removeTickEvent(ontickID) 
 				game.removeVisual(self)
 			}
 		})

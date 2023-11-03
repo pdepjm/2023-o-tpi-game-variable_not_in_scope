@@ -4,8 +4,19 @@ import Obstaculo.*
 import juego.*
 import config.*
 
+object onTickIdHandler{
+	var id = 0
+	method newID(){
+		id++
+		if(id==1024){
+			id=0
+		}
+		return "desplazable"+id.toString()
+	} 
+}
+
 object generador{
-	
+
 	//se utiliza para guardar la altura de un bloque generado en el modo de juego 3
 	var altura_anterior=game.height()/2
 	
@@ -17,7 +28,8 @@ object generador{
 			const cantidadPinchos = new Range(start = 1, end = 3).anyOne()
 			cantidadPinchos.times({
 				n=>game.schedule(config.velRetroceso()*n,{
-					new Obstaculo(image = config.imgEspina()).aparecer(altura)
+					const ontickID = onTickIdHandler.newID()
+					new Obstaculo(image = config.imgEspina()).aparecer(altura, ontickID)
 				})
 			})
 			
@@ -34,9 +46,9 @@ object generador{
 		
 		//aparecer sucesivamente bloques en posiciones aleatorias
 		game.onTick(config.frecuenciaBloques(), "aparece bloque", {
-			
+			const ontickID = onTickIdHandler.newID()
 			const altura = self.randomEntre(config.alturaPiso(), game.height()-1, altura_anterior)
-			new Obstaculo(image = config.imgBloque()).aparecer(altura)
+			new Obstaculo(image = config.imgBloque()).aparecer(altura, ontickID)
 			altura_anterior=altura
 			
 		})
@@ -58,11 +70,12 @@ object generador{
 		
 		//aparecer sucesivamente bloques que hagan de plataforma
 		game.onTick(config.velRetroceso(),"aparecer piso",{
-			const baldosa = new Plataforma(
-				position=game.at(game.width(),config.alturaPlataforma()-1),
-				image=config.imgBloque()
+			const baldosa = new Plataforma(image=config.imgBloque())
+			const ontickID = onTickIdHandler.newID()
+			baldosa.aparecer(
+				game.at(game.width(),config.alturaPlataforma()-1),
+				ontickID
 			)
-			baldosa.aparecer()
 		})
 		
 		game.schedule(config.tiempoPlataforma()-config.frecuenciaPinchos(),{
@@ -80,12 +93,13 @@ object generador{
 		game.onTick(config.frecuenciaColumna(), "generar columna", {
 			
 			alturaAleatoria = numeros.anyOne()
-			
+			const ontickID = onTickIdHandler.newID()
 			if(alturaAleatoria==1){
-				new Obstaculo(image = config.imgColumna()).aparecer(config.alturaPiso())
+				new Obstaculo(image = config.imgColumna()).aparecer(config.alturaPiso(), ontickID)
 			}else if (alturaAleatoria==2){
-				new Obstaculo(image = config.imgColumna()).aparecer(config.columnaAlta())
-				new Obstaculo(image = config.imgBloque()).aparecer(config.alturaPiso()+config.techo())
+				const anotherOnTickID = onTickIdHandler.newID()
+				new Obstaculo(image = config.imgColumna()).aparecer(config.columnaAlta(), ontickID)
+				new Obstaculo(image = config.imgBloque()).aparecer(config.alturaPiso()+config.techo(), anotherOnTickID)
 			}
 			
 		})
@@ -109,14 +123,17 @@ object nivelPiso{
 	method altura() = altura
 	
 	method iniciar(){
+
+		//setear dato para que lo use el portal al switchear
+		juego.currentGameMode(self)
+		
+		//player configs
+		player.entity(self.entity())
+		player.entity().position(game.at(config.x(),altura))
 		
 		generador.generarPinchos(altura, config.tiempoPiso())
 		
-		game.schedule(config.tiempoPiso(), {
-			portal.nextHeight(config.alturaPlataforma())
-		})
-		
-		game.schedule(config.tiempoPiso(),{portal.aparecer(altura)})
+		game.schedule(config.tiempoPiso(),{portal.aparecer(altura, "aparecerPortal")})
 		
 	}
 	
@@ -133,46 +150,23 @@ object nivelPlataforma{
 	method altura() = altura
 	
 	method iniciar(){
-		generador.generarPlataforma()
-	
+		
+		//setear dato para que lo use el portal al switchear
+		juego.currentGameMode(self)
+		
+		//player configs
+		player.entity(self.entity())
+		player.entity().position(game.at(config.x(),altura))
+		
+		//generador.generarPlataforma() POR QUE NO FUNCIONA??
 		//game.schedule(config.frecuenciaPinchos(),{generador.generarPinchos(config.alturaPlataforma())})
 		generador.generarPinchos(altura, config.tiempoPlataforma()) //tal vez aparezcan muy rapido
-	
-		game.schedule(config.tiempoPlataforma(), {
-			portal.nextHeight(config.alturaNave())
-		})
-		
-		game.schedule(config.tiempoPlataforma(),{portal.aparecer(altura)})	
-	}
-	
-	method siguienteNivel() = nivelArania
 
-}
-
-object nivelArania{
-		
-	const altura = config.alturaPiso()
-	
-	method entity() = arania
-	
-	method altura() = altura
-	
-	method iniciar(){
-	
-		arania.moverse()
-		
-		generador.generarColumnas()
-		
-		game.schedule(config.tiempoArania(),{
-			portal.aparecer(altura)
-			new Obstaculo(image = config.imgColumna()).aparecer(config.columnaAlta())
-			new Obstaculo(image = config.imgBloque()).aparecer(altura+config.techo())
-		})
-
+		game.schedule(config.tiempoPlataforma(),{portal.aparecer(altura, "aparecerPortal")})	
 	}
 	
 	method siguienteNivel() = nivelNave
-	
+
 }
 
 object nivelNave{
@@ -185,18 +179,58 @@ object nivelNave{
 
 	method iniciar(){
 	
+		//setear dato para que lo use el portal al switchear
+		juego.currentGameMode(self)
+		
+		//player configs
+		player.entity(self.entity())
+		player.entity().position(game.at(config.x(),altura))
+		
 		ship.moverse()
 	
 		generador.generarBloquesAleatorios()
 		
-		game.schedule(config.tiempoNave(), {
-			portalRotado.nextHeight(config.alturaPiso())
-		})
-		
-		game.schedule(config.tiempoNave(),{portalRotado.aparecer(config.alturaPiso())})
+		game.schedule(config.tiempoNave(),{portalRotado.aparecer(config.alturaPiso(), "aparecerPortal")})
 
 	}
+	
+	method siguienteNivel() = nivelArania
 }
+
+object nivelArania{
+		
+	const altura = config.alturaPiso()
+	
+	method entity() = arania
+	
+	method altura() = altura
+	
+	method iniciar(){
+		
+		//setear dato para que lo use el portal al switchear
+		juego.currentGameMode(self)
+		
+		//player configs
+		player.entity(self.entity())
+		player.entity().position(game.at(config.x(),altura))
+	
+		arania.moverse()
+		
+		generador.generarColumnas()
+		
+		game.schedule(config.tiempoArania(),{
+			portal.aparecer(altura, "aparecerPortal")
+			new Obstaculo(image = config.imgColumna()).aparecer(config.columnaAlta(), "ultimaColumna")
+			new Obstaculo(image = config.imgBloque()).aparecer(altura+config.techo(), "ultimoObstaculo")
+		})
+
+	}
+	
+	method siguienteNivel() = nivelPiso
+	
+}
+
+
 
 
 
