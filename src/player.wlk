@@ -5,7 +5,7 @@ import config.*
 
 
 
-object logo{
+object player{
 	
 	var property entity = cube
 	
@@ -17,47 +17,20 @@ object logo{
 		entity.saltar()
 	}
 	
-	
-	method atravesar(new_height){
-
-		if(new_height==config.nivel3() && !(entity.isShip())){
-			entity.position(game.at(config.x(),new_height))
-			entity = ship
-			entity.moverse()
-		}
-		else if (new_height!=config.nivel3() && !(entity.isShip())){
-			entity.position(game.at(config.x(),new_height))
-			entity = cube
-		}
-		else if(self.entity()==arania){
-			self.entity(cube)
-		}
-		else if (new_height!=config.nivel3() && entity.isShip()){
-			entity.position(game.at(config.x(),new_height))
-			game.removeTickEvent("movimiento")	
-			entity = cube
-		}
-		else if(!(entity.isShip())){
-			
-			entity = arania
-		}
-
-	}
-	
-	
 }
 
+//Cod 1
 object cube {
 	
-	var property position = game.at(config.x(),config.piso())
+	var property position
 
 
 	var property image = "./assets/Cube23.png"
 	
 	method saltar() {
 		//Use el if para que no se pueda volver a saltar en el aire
-		
-		if(self.position().y() <800 && self.position().y()>=config.piso()){
+		const alturaBase = juego.currentGameMode().altura()
+		if(self.position().y() <800 && self.position().y()>=alturaBase){
 			//self.salto_preciso()
 		//self.image("Espina.png")
 			self.position(position.up(config.alturaSalto()))
@@ -65,13 +38,12 @@ object cube {
 		}
 	}
 	
-	method isShip()=false
-	
 }
 
+//Cod 2
 object arania {
 	
-	var property position = game.at(config.x(),config.piso())
+	var property position
 	
 	var property image = "./assets/arania/arania1-1.png"
 	
@@ -95,11 +67,6 @@ object arania {
 			
 		}
 		
-		
-		
-	
-		
-	
 	}
 	
 
@@ -117,7 +84,8 @@ object arania {
 			self.image("./assets/arania/arania2-1.png")
 			self.paso(0)
 		}
-		}
+	}
+	
 	method trepar(){
 		
 			if(self.paso()==0){
@@ -129,13 +97,12 @@ object arania {
 			self.paso(0)	
 	}}
 	
-	method isShip()=false
-	
 }
 
+//Cod 3
 object ship {
 	
-	var property position = game.at(config.x(),config.nivel3())
+	var property position
 	
 	const image_vector = ["./assets/triangle_ship_down.png", "./assets/triangle_ship_up.png"]
 
@@ -144,15 +111,13 @@ object ship {
 	var movement_direction = -1
 	
 	method moverse(){
-		game.onTick(config.velRetroceso(),"movimiento",{self.autoControl()})
-	}
-	
-	method autoControl(){
-		self.position(game.at(self.position().x(),self.position().y()+movement_direction))
-		const y_position = self.position().y()
-		if(y_position==game.height() || y_position==config.piso()){
-			self.choque()
-		}
+		game.onTick(config.velRetroceso(),"movimiento",{
+			self.position(game.at(self.position().x(),self.position().y()+movement_direction))
+			const y_position = self.position().y()
+			if(y_position==game.height() || y_position==config.alturaPiso()){
+				self.choque()
+			}
+		})
 	}
 	
 	method saltar(){
@@ -165,12 +130,10 @@ object ship {
 	}
 	
 	method choque(){
-		game.say(logo,"Perdiste")
+		game.say(player,"Perdiste")
 		game.schedule(config.loseDelay(),{game.stop()})
 		game.addVisual(perder)	
 	}
-	
-	method isShip()=true
 	
 }
 

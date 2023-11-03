@@ -1,6 +1,6 @@
 import wollok.game.*
 import juego.*
-import logo.*
+import player.*
 import niveles.*
 
 program gd {
@@ -8,21 +8,11 @@ program gd {
 	juego.iniciar()     
 	      
 	//Saltar
-	keyboard.space().onPressDo({logo.saltar()})
+	keyboard.space().onPressDo({player.saltar()})
 	
-	//Perder
-	game.onCollideDo(logo,{algo=>algo.choque()})
+	//Colision
+	game.onCollideDo(player,{algo=>algo.choque()})
 	
-	//Atravesar Portal
-	game.onCollideDo(portal,{
-		algo=>
-			var new_height = portal.nextHeight()
-			algo.atravesar(new_height)
-	})
-	
-	
-	//Eliminador
-	//game.onCollideDo(eliminador,{algo=>algo.autoelminarse()})
 	
 	//Imagen De Fondo
 	game.boardGround("./assets/fondo.jpg")
