@@ -38,6 +38,12 @@ object juego {
 		
 	}
 	
+	method perder(){
+		game.schedule(config.loseDelay(),{game.stop()})
+		game.addVisual(perder_logo)	
+		game.say(player, "auch!")
+	}
+	
 }
 
 
@@ -52,7 +58,7 @@ object inicio{
 	var property image = "./assets/inicio.jpg"
 }
 
-object perder{
+object perder_logo{
 	
 	
 	var property position = game.origin()

@@ -8,7 +8,11 @@ object config {
 	method alturaNave() = 17
 	
 	method velRetroceso() = 45
+	
+	/*Configuracion del salto del jugador siendo cubo */
 	method alturaSalto() = 3
+	method jumpSteps() = 4	//resolucion de la animacion de salto del cubo, debe ser divisor de jumpTime()
+	method jumpTime() = 320
 	
 	method frecuenciaPinchos() = 1500
 	method frecuenciaBloques() = 800

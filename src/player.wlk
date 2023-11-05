@@ -28,14 +28,31 @@ object cube {
 	var property image = "./assets/Cube23.png"
 	
 	method saltar() {
-		//Use el if para que no se pueda volver a saltar en el aire
+		
 		const alturaBase = juego.currentGameMode().altura()
-		if(self.position().y() <800 && self.position().y()>=alturaBase){
-			//self.salto_preciso()
-		//self.image("Espina.png")
-			self.position(position.up(config.alturaSalto()))
-			game.schedule(320,{self.position(position.down(config.alturaSalto()))})
+		
+		if(self.position().y()==alturaBase){
+
+			var stepCount=1 
+			const deltaT = config.jumpTime()/config.jumpSteps()
+			game.onTick(deltaT, "saltar", {
+																//funcion parabolica de posicion
+				self.position(game.at(config.x(),alturaBase + self.jumpOffset(deltaT*stepCount)))
+				
+				if(stepCount == config.jumpTime()/deltaT){
+					game.removeTickEvent("saltar")
+				}
+				stepCount++
+				
+			})
+			
 		}
+	}
+	
+	//devuelve un desplazamiento vertical segun una ecuacion parabolica y una abscisa t
+		//la ecuacion parabolica depende de la altura de salto y el tiempo del salto
+	method jumpOffset(t){
+		return (4*config.alturaSalto()*t)/config.jumpTime()*(1-(t/config.jumpTime()))
 	}
 	
 }
@@ -108,7 +125,7 @@ object ship {
 
 	var property image = image_vector.get(0)
 	
-	var movement_direction = -1
+	var property movement_direction = -1
 	
 	method moverse(){
 		game.onTick(config.velRetroceso(),"movimiento nave",{
@@ -130,9 +147,7 @@ object ship {
 	}
 	
 	method choque(){
-		game.say(player,"Perdiste")
-		game.schedule(config.loseDelay(),{game.stop()})
-		game.addVisual(perder)	
+		juego.perder()
 	}
 	
 }
