@@ -69,7 +69,7 @@ object arania {
 	var property pisoActual = 0
 	
 	method saltar() {
-		//self.position().y(config.columnaAlta()+300)
+
 		game.removeTickEvent("movimiento arania")	
 		
 		if(self.pisoActual()==0){
@@ -105,14 +105,16 @@ object arania {
 	
 	method trepar(){
 		
-			if(self.paso()==0){
+		if(self.paso()==0){
 			self.image("./assets/arania/arania1-2.png")
 			self.paso(1)	
 			
 		}else{
 			self.image("./assets/arania/arania2-2.png")
 			self.paso(0)	
-	}}
+		}
+		
+	}
 	
 }
 

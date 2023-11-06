@@ -16,13 +16,8 @@ object juego {
 		game.width(38.4)// 1920/50 = 38.4
 		game.height(21.6)// 1080/50 = 21.6
 		game.addVisualCharacter(player)
-		game.addVisualCharacter(portal)
-		game.addVisualCharacter(portalRotado)
 		game.addVisualCharacter(inicio)
 		game.addVisualCharacter(pressEnter)
-		portal.offBoard()
-		portalRotado.offBoard()
-		
 		
 		//esperando a que se presione enter
 		keyboard.enter().onPressDo({

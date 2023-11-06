@@ -11,7 +11,7 @@ object config {
 	
 	/*Configuracion del salto del jugador siendo cubo */
 	method alturaSalto() = 3
-	method jumpSteps() = 4	//resolucion de la animacion de salto del cubo, debe ser divisor de jumpTime()
+	method jumpSteps() = 8	//resolucion de la animacion de salto del cubo, debe ser divisor de jumpTime()
 	method jumpTime() = 320
 	
 	method frecuenciaPinchos() = 1500
