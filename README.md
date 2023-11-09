@@ -1,22 +1,19 @@
-# Nombre del juego (<- borrar y completar)
+## Geometry Dash
 
 ## Equipo de desarrollo
 
-- Alguien
-- Persona
-- etc.
+- Santiago Hamamura
+- Joaquín Coaricona
 
 ## Capturas
+![image](https://github.com/pdepjm/2023-o-tpi-game-variable_not_in_scope/assets/129311632/933685c3-6e61-4e69-a8bc-f32733753753)
 
-(agregar)
 
 ## Reglas de Juego / Instrucciones
 
-(Escribirlas)
+Saltar (barra espaciadora), pasar por el portal y seguir saltando :D
 
 
 ## Otros
 
-- Curso/Facultad
-- Versión de wollok
-- Una vez terminado, no tenemos problemas en que el repositorio sea público / queremos manternerlo privado
+- Universidad Tecnológica Nacional - FRBA

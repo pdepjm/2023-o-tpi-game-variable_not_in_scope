@@ -1,0 +1,23 @@
+import wollok.game.*
+import juego.*
+import player.*
+import niveles.*
+
+program gd {
+	
+	juego.iniciar()     
+	      
+	//Saltar
+	keyboard.space().onPressDo({player.saltar()})
+	
+	//Colision
+	game.onCollideDo(player,{algo=>algo.choque()})
+	
+	
+	//Imagen De Fondo
+	game.boardGround("./assets/fondo.jpg")
+	
+	
+	game.start()
+	
+}
